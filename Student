@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Quiz</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      padding-top: 60px;
+    }
+
+    .box {
+      background: white;
+      padding: 25px;
+      width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 95%;
+      background: #0071e3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    button:hover {
+      background: #005bb5;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h2>Student Quiz</h2>
+
+  <!-- QUESTION AREA -->
+  <div id="quizBox">
+    <h3 id="questionText">Click Start</h3>
+
+    <input type="text" id="answerInput" placeholder="Your answer">
+
+    <button onclick="submitAnswer()">Submit</button>
+    <button onclick="startQuiz()">Start Quiz</button>
+
+    <p id="progress"></p>
+  </div>
+
+  <!-- RESULT AREA -->
+  <div id="resultBox" class="hidden"></div>
+
+</div>
+
+<!-- SHARED LOGIC -->
+<script src="app.js"></script>
+
+<script>
+let role = localStorage.getItem("role");
+
+// Redirect if not student
+if (role !== "student") {
+  alert("Access denied. Please login as student.");
+  window.location.href = "login.html";
+}
+
+let questions = [];
+let current = 0;
+let score = 0;
+let wrong = [];
+
+/* =====================
+   START QUIZ
+===================== */
+function startQuiz() {
+  questions = getQuestions(); // from app.js
+
+  if (questions.length === 0) {
+    alert("No questions available!");
+    return;
+  }
+
+  current = 0;
+  score = 0;
+  wrong = [];
+
+  showQuestion();
+}
+
+/* =====================
+   SHOW QUESTION
+===================== */
+function showQuestion() {
+  document.getElementById("resultBox").classList.add("hidden");
+  document.getElementById("quizBox").classList.remove("hidden");
+
+  document.getElementById("questionText").innerText =
+    questions[current].question;
+
+  document.getElementById("progress").innerText =
+    `Question ${current + 1} of ${questions.length}`;
+
+  document.getElementById("answerInput").value = "";
+}
+
+/* =====================
+   SUBMIT ANSWER
+===================== */
+function submitAnswer() {
+  let userAnswer = document.getElementById("answerInput").value.trim();
+  let correctAnswer = questions[current].answer.trim();
+
+  if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+    score++;
+  } else {
+    wrong.push({
+      q: questions[current].question,
+      correct: correctAnswer,
+      user: userAnswer
+    });
+  }
+
+  current++;
+
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+/* =====================
+   SHOW RESULT
+===================== */
+function showResult() {
+  document.getElementById("quizBox").classList.add("hidden");
+
+  let msg = "Needs more revision";
+  if (score >= 8) msg = "Excellent";
+  else if (score >= 5) msg = "Good";
+
+  let html = `
+    <h3>Final Score</h3>
+    <p>${score} / ${questions.length}</p>
+    <h4>${msg}</h4>
+    <hr>
+    <h4>Wrong Answers</h4>
+  `;
+
+  wrong.forEach(w => {
+    html += `
+      <p>
+        <b>Q:</b> ${w.q}<br>
+        <b>Your Answer:</b> ${w.user}<br>
+        <b>Correct:</b> ${w.correct}
+      </p>
+      <hr>
+    `;
+  });
+
+  document.getElementById("resultBox").innerHTML = html;
+  document.getElementById("resultBox").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
