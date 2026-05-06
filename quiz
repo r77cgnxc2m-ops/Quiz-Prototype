@@ -1,50 +1,65 @@
-let questions = JSON.parse(localStorage.getItem("questions")) || [];
 
 /* =========================
-   SAVE / LOAD
-========================= */
-function saveQuestions() {
-  localStorage.setItem("questions", JSON.stringify(questions));
-}
-
-/* =========================
-   ADMIN FUNCTIONS
-========================= */
-function addQuestion(q, a) {
-  questions.push({ question: q, answer: a });
-  saveQuestions();
-}
-
-/* =========================
-   LOAD QUESTIONS
+   LOAD QUESTIONS (single source of truth)
 ========================= */
 function getQuestions() {
   return JSON.parse(localStorage.getItem("questions")) || [];
 }
 
 /* =========================
-   QUIZ SYSTEM
+   SAVE QUESTIONS
+========================= */
+function saveQuestions(questions) {
+  localStorage.setItem("questions", JSON.stringify(questions));
+}
+
+/* =========================
+   ADMIN FUNCTION: ADD QUESTION
+========================= */
+function addQuestion(q, a) {
+  let questions = getQuestions();
+
+  questions.push({
+    question: q,
+    answer: a
+  });
+
+  saveQuestions(questions);
+}
+
+/* =========================
+   QUIZ STATE (student only)
 ========================= */
 let current = 0;
 let score = 0;
 let wrongAnswers = [];
+let quizQuestions = [];
 
+/* =========================
+   START QUIZ
+========================= */
 function startQuiz() {
-  questions = getQuestions();
+  quizQuestions = getQuestions();
+
   current = 0;
   score = 0;
   wrongAnswers = [];
 }
 
+/* =========================
+   CHECK ANSWER
+========================= */
 function checkAnswer(userAnswer) {
-  let correct = questions[current].answer.toLowerCase();
+  if (!quizQuestions || quizQuestions.length === 0) return;
 
-  if (userAnswer.toLowerCase() === correct) {
+  let correct = quizQuestions[current].answer;
+
+  if (userAnswer.trim().toLowerCase() === correct.trim().toLowerCase()) {
     score++;
   } else {
     wrongAnswers.push({
-      question: questions[current].question,
-      correct: questions[current].answer,
+      question: quizQuestions[current].question,
+      correct: correct,
       user: userAnswer
     });
   }
@@ -53,7 +68,7 @@ function checkAnswer(userAnswer) {
 }
 
 /* =========================
-   RESULT
+   RESULT MESSAGE
 ========================= */
 function getResultMessage() {
   if (score >= 8) return "Excellent";
