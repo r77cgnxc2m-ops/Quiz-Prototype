@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+
+<input id="question" placeholder="Enter question">
+<input id="answer" placeholder="Enter answer">
+<button onclick="addQuestion()">Add Question</button>
+
+<input id="search" placeholder="Search..." oninput="searchQuestions()">
+
+<div id="list"></div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
