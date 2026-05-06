@@ -1,0 +1,62 @@
+let questions = JSON.parse(localStorage.getItem("questions")) || [];
+
+/* =========================
+   SAVE / LOAD
+========================= */
+function saveQuestions() {
+  localStorage.setItem("questions", JSON.stringify(questions));
+}
+
+/* =========================
+   ADMIN FUNCTIONS
+========================= */
+function addQuestion(q, a) {
+  questions.push({ question: q, answer: a });
+  saveQuestions();
+}
+
+/* =========================
+   LOAD QUESTIONS
+========================= */
+function getQuestions() {
+  return JSON.parse(localStorage.getItem("questions")) || [];
+}
+
+/* =========================
+   QUIZ SYSTEM
+========================= */
+let current = 0;
+let score = 0;
+let wrongAnswers = [];
+
+function startQuiz() {
+  questions = getQuestions();
+  current = 0;
+  score = 0;
+  wrongAnswers = [];
+}
+
+function checkAnswer(userAnswer) {
+  let correct = questions[current].answer.toLowerCase();
+
+  if (userAnswer.toLowerCase() === correct) {
+    score++;
+  } else {
+    wrongAnswers.push({
+      question: questions[current].question,
+      correct: questions[current].answer,
+      user: userAnswer
+    });
+  }
+
+  current++;
+}
+
+/* =========================
+   RESULT
+========================= */
+function getResultMessage() {
+  if (score >= 8) return "Excellent";
+  if (score >= 5) return "Good";
+  return "Needs more revision";
+}
