@@ -4,19 +4,100 @@
   <title>Admin Panel</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <h1>Admin Panel</h1>
 
+<!-- ROLE CHECK -->
+<script>
+let role = localStorage.getItem("role");
+
+if (!role || role !== "admin") {
+  alert("Access denied. Admins only.");
+  window.location.href = "login.html";
+}
+</script>
+
+<!-- INPUT AREA -->
 <input id="question" placeholder="Enter question">
 <input id="answer" placeholder="Enter answer">
-<button onclick="addQuestion()">Add Question</button>
+<button onclick="addQuestionUI()">Add Question</button>
 
+<!-- SEARCH -->
 <input id="search" placeholder="Search..." oninput="searchQuestions()">
 
+<!-- DISPLAY -->
 <div id="list"></div>
 
 <script src="app.js"></script>
+
+<script>
+/* =========================
+   ADD QUESTION (UI WRAPPER)
+========================= */
+
+function addQuestionUI() {
+  let q = document.getElementById("question").value.trim();
+  let a = document.getElementById("answer").value.trim();
+
+  if (!q || !a) {
+    alert("Please fill both fields");
+    return;
+  }
+
+  addQuestion(q, a); // from app.js
+
+  document.getElementById("question").value = "";
+  document.getElementById("answer").value = "";
+
+  displayQuestions(); // refresh list
+}
+
+/* =========================
+   DISPLAY QUESTIONS
+========================= */
+
+function displayQuestions(list = getQuestions()) {
+  let div = document.getElementById("list");
+  div.innerHTML = "";
+
+  if (list.length === 0) {
+    div.innerHTML = "<p>No questions added yet</p>";
+    return;
+  }
+
+  list.forEach((q, index) => {
+    div.innerHTML += `
+      <p>
+        <b>${index + 1}. Q:</b> ${q.question}<br>
+        <b>A:</b> ${q.answer}
+      </p>
+      <hr>
+    `;
+  });
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+function searchQuestions() {
+  let term = document.getElementById("search").value.toLowerCase();
+
+  let filtered = getQuestions().filter(q =>
+    q.question.toLowerCase().includes(term)
+  );
+
+  displayQuestions(filtered);
+}
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+displayQuestions();
+</script>
 
 </body>
 </html>
