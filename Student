@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Student Quiz</title>
+
   <style>
     body {
       font-family: Arial;
@@ -75,26 +76,36 @@
 <script src="app.js"></script>
 
 <script>
+/* =========================
+   ROLE SECURITY CHECK
+========================= */
+
+// get role from login page
 let role = localStorage.getItem("role");
 
-// Redirect if not student
-if (role !== "student") {
+// if no role OR wrong role → block access
+if (!role || role !== "student") {
   alert("Access denied. Please login as student.");
   window.location.href = "login.html";
 }
+
+/* =========================
+   QUIZ VARIABLES
+========================= */
 
 let questions = [];
 let current = 0;
 let score = 0;
 let wrong = [];
 
-/* =====================
+/* =========================
    START QUIZ
-===================== */
+========================= */
+
 function startQuiz() {
   questions = getQuestions(); // from app.js
 
-  if (questions.length === 0) {
+  if (!questions || questions.length === 0) {
     alert("No questions available!");
     return;
   }
@@ -106,9 +117,10 @@ function startQuiz() {
   showQuestion();
 }
 
-/* =====================
+/* =========================
    SHOW QUESTION
-===================== */
+========================= */
+
 function showQuestion() {
   document.getElementById("resultBox").classList.add("hidden");
   document.getElementById("quizBox").classList.remove("hidden");
@@ -122,9 +134,10 @@ function showQuestion() {
   document.getElementById("answerInput").value = "";
 }
 
-/* =====================
+/* =========================
    SUBMIT ANSWER
-===================== */
+========================= */
+
 function submitAnswer() {
   let userAnswer = document.getElementById("answerInput").value.trim();
   let correctAnswer = questions[current].answer.trim();
@@ -148,9 +161,10 @@ function submitAnswer() {
   }
 }
 
-/* =====================
+/* =========================
    SHOW RESULT
-===================== */
+========================= */
+
 function showResult() {
   document.getElementById("quizBox").classList.add("hidden");
 
